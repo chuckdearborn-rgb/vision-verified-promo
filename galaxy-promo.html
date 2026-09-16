@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vision Verified — Grok Bot Galaxy</title>
+  <meta name="description" content="Safe, secure, unique to you. Prove you’re a real person — face-geometry proof, wipe-after-verify, X-first trust for new and low-volume accounts." />
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg2: #111a2b;
+      --card: #162033;
+      --text: #f3efe6;
+      --muted: #b7c0d0;
+      --line: #2a3952;
+      --v: #39ff14;
+      --v-dim: rgba(57, 255, 20, 0.16);
+      --trust: #5b8def;
+      --trust-soft: rgba(91, 141, 239, 0.14);
+      --sell: #b7a6d8;
+      --sell-text: #1a1405;
+      --warm: #ff8a5b;
+      --radius: 18px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1000px 520px at 8% -8%, rgba(91,141,239,0.18), transparent 55%),
+        radial-gradient(900px 480px at 100% 0%, rgba(183,166,216,0.10), transparent 50%),
+        var(--bg);
+      line-height: 1.55;
+    }
+    a { color: var(--trust); }
+    .wrap { width: min(980px, calc(100% - 2rem)); margin: 0 auto; }
+    header {
+      padding: 1.25rem 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: nowrap;
+    }
+    header .cta-row {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0.4rem;
+      align-items: center;
+      justify-content: flex-end;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    header .btn {
+      padding: 0.45rem 0.7rem;
+      font-size: 0.78rem;
+      white-space: nowrap;
+      flex: 0 1 auto;
+    }
+    @media (max-width: 920px) {
+      header { flex-wrap: wrap; }
+      header .cta-row { flex-wrap: wrap; justify-content: flex-start; width: 100%; }
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; color: var(--text); }
+    .badge-v {
+      width: 2.15rem; height: 2.15rem; padding: 0; border-radius: 0.55rem;
+      display: grid; place-items: center; font-size: 1rem; letter-spacing: 0;
+      background: var(--v-dim);
+      border: 1px solid rgba(57,255,20,0.55);
+      color: var(--v); font-weight: 800;
+      box-shadow: 0 0 22px rgba(57,255,20,0.28);
+    }
+    .pill {
+      font-size: 0.78rem; color: var(--sell);
+      border: 1px solid rgba(183,166,216,0.4);
+      background: rgba(183,166,216,0.1);
+      padding: 0.35rem 0.7rem; border-radius: 999px;
+    }
+    
+    
+
+    .freeze-top {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11,18,32,0.97);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(42,57,82,0.55);
+      padding-bottom: 0.65rem;
+    }
+    .freeze-top header {
+      padding: 1rem 0 0.65rem;
+      border: 0;
+      background: transparent;
+    }
+    .freeze-top .freeze-title {
+      margin: 0;
+      font-size: clamp(1.65rem, 3.8vw, 2.55rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      font-weight: 750;
+    }
+    .freeze-top .freeze-title .vmark {
+      color: var(--v);
+      text-shadow: 0 0 24px rgba(57,255,20,0.35);
+    }
+
+    .hero { padding: 0.5rem 0 2rem; }
+
+
+    .hero h1 {
+      font-size: clamp(2rem, 4.5vw, 3.05rem);
+      line-height: 1.08; margin: 0 0 1rem; letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .hero h1 .vmark, .hero-freeze h1 .vmark { color: var(--v); text-shadow: 0 0 24px rgba(57,255,20,0.35); }
+    .lede { font-size: 1.12rem; color: var(--muted); max-width: none; width: 100%; margin: 0 0 1.25rem; }
+    .sell {
+      display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 0 0 1.5rem;
+    }
+    .sell span {
+      font-size: 0.85rem; font-weight: 700;
+      color: var(--text); background: var(--trust-soft);
+      border: 1px solid rgba(91,141,239,0.35);
+      padding: 0.45rem 0.8rem; border-radius: 999px;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.85rem 1.15rem; border-radius: 999px; text-decoration: none; font-weight: 700;
+      border: 1px solid transparent;
+    }
+    .btn-primary { background: var(--sell); color: var(--sell-text); box-shadow: 0 8px 28px rgba(183,166,216,0.25); }
+    .btn-secondary { background: transparent; color: var(--text); border-color: var(--line); }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; padding-bottom: 2rem; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 40%), var(--card);
+      border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.25rem;
+    }
+    .card h2, .card h3 { margin: 0 0 0.55rem; letter-spacing: -0.02em; color: var(--sell); }
+    .card p, .card li { color: var(--muted); }
+    .card ul { margin: 0.4rem 0 0; padding-left: 1.1rem; }
+    .card li { margin: 0.35rem 0; }
+    .span-12 { grid-column: span 12; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .span-3 { grid-column: span 3; }
+    .kicker {
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--sell); font-weight: 700; margin-bottom: 0.35rem;
+    }
+    .callout { border-color: rgba(91,141,239,0.45); }
+    .legal {
+      border-color: rgba(183,166,216,0.4);
+      background: linear-gradient(180deg, rgba(183,166,216,0.08), transparent 55%), var(--card);
+    }
+    .legal .kicker { color: var(--sell); }
+    .step {
+      display: grid; grid-template-columns: auto 1fr; gap: 0.85rem;
+      padding: 0.85rem 0; border-top: 1px solid var(--line);
+    }
+    .step:first-child { border-top: 0; padding-top: 0; }
+    .n {
+      width: 1.7rem; height: 1.7rem; border-radius: 999px;
+      display: grid; place-items: center; background: var(--trust-soft);
+      color: var(--trust); font-weight: 800; font-size: 0.85rem;
+      border: 1px solid rgba(91,141,239,0.4);
+    }
+    .step .step-title { color: var(--text); font-weight: 700; display: block; margin-bottom: 0.15rem; }
+    .step .step-title .v { color: var(--v); font-weight: 800; }
+    .point h3 { color: var(--sell); font-size: 1.05rem; }
+    footer {
+      border-top: 1px solid var(--line); padding: 1.5rem 0 2.5rem;
+      color: var(--muted); font-size: 0.92rem;
+    }
+    @media (max-width: 900px) {
+      .span-6, .span-4, .span-3 { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="freeze-top">
+    <header>
+      <div class="brand">
+        <div class="badge-v" aria-hidden="true">V</div>
+        <div>Vision Verified</div>
+      </div>
+      <nav class="cta-row" aria-label="Page sections">
+        <a class="btn btn-primary" href="#gift">A free gift to X</a>
+        <a class="btn btn-secondary" href="#judges">For Galaxy evaluators</a>
+        <a class="btn btn-secondary" href="#legal">Legal ID options</a>
+        <a class="btn btn-secondary" href="#counsel">General considerations</a>
+        <a class="btn btn-secondary" href="#anti-bot">Bot &amp; AI defenses</a>
+        <a class="btn btn-secondary" href="#no-v">What no <span style="color:var(--v);font-weight:800">V</span> means</a>
+      </nav>
+    </header>
+    <h1 class="freeze-title">Safe. Secure. Unique — your face becomes a <span class="vmark">VISION</span> of TRUST.</h1>
+    </div>
+
+    <section class="hero">
+      <p class="lede">
+        Vision Verified helps real people prove they’re human on X. We match an approved
+        government photo ID to a live face, then build a <strong style="color:var(--text)">minute geometric face map</strong> unique to that person (aimed at huge scale — on the order of half a billion people — without duplicate proofs), seal it with a <strong style="color:var(--text)">cryptographic signature</strong>, and mint a QR that is only a signed ticket id — not the face map itself. If that same face tries to be used elsewhere, it gets flagged. Once a crypto ID is minted, zero duplicate matches are allowed. Images are deleted as soon as verification finishes — we do not keep your ID file or other personal information from the ID; we keep the unique geometric face proof (signed QR / ticket), not a photo. New and low-volume accounts finally have a way to earn trust — in about three minutes.
+      </p>
+      <div class="sell" aria-label="Selling points">
+        <span>Safe</span>
+        <span>Secure</span>
+        <span>Unique to the individual</span>
+        <span>Face-geometry proof</span>
+        <span>Unique at huge scale</span>
+        <span>Reuse gets flagged</span>
+        <span>Hardened vault</span>
+        <span>Proof only — no ID file</span>
+        <span>Wipe-after-verify</span>
+        <span>Built for new accounts</span>
+        <span>About 3 minutes</span>
+        <span>Gifted freely to X</span>
+      </div>
+    </section>
+
+    <section class="grid" id="gift">
+      <article class="card span-12 callout">
+        <h2>To X, Grok, and every real person online: take it and make it better.</h2>
+        <p>
+          <strong style="color:var(--text)">Vision Verified</strong> is free for X users and freely offered to SpaceXAI.
+          Free for developers in the marketplace. SpaceXAI may use, change, improve, integrate, and scale it —
+          and may charge users a small amount later if that helps it grow (Charles runs no paid tier).
+          No royalty, exclusivity, or control is requested.
+          It’s my way of saying thank you to Elon and all the amazing people on the team that make my life easier every day.
+        </p>
+        <p>
+          The goal is a safer internet where real people, especially a new or quiet account, can
+          prove there is a real person behind the user name without surrendering any level of privacy.
+        </p>
+        <p>
+          <strong style="color:var(--text)">What you’re getting:</strong>
+          live face-then-license verify · one ID (US DL, state ID, or passport) · smart back-scan prompt only when the state allows ·
+          PAD + gestures + injection defense · unique geometric face proof in a vault · cryptographically signed QR ticket ·
+          zero duplicate matches · delete ID/video after verify · creators’ bots auto-earn the neon green <strong style="color:var(--v)">V</strong> ·
+          design-ready now, live capture when counsel/vendor clears.
+        </p>
+      </article>
+    </section>
+
+
+    <section class="grid" id="no-v">
+      <article class="card span-12 callout">
+        <h2>If someone doesn’t have the <strong style="color:var(--v)">V</strong></h2>
+        <p>
+          No green <strong style="color:var(--v)">V</strong> does <strong style="color:var(--text)">not</strong> automatically mean “bot.”
+          It means they haven’t shown a Vision Verified proof. Common reasons:
+        </p>
+        <ul>
+          <li><strong style="color:var(--text)">Under 18</strong> — we block minors from verifying (by design)</li>
+          <li><strong style="color:var(--text)">Couldn’t verify</strong> — ID/face checks failed or weren’t available</li>
+          <li><strong style="color:var(--text)">Wouldn’t verify</strong> — they chose not to</li>
+          <li><strong style="color:var(--text)">Bot or fake</strong> — or an account that never completed a real-person check</li>
+        </ul>
+        <p>
+          That clarity helps people know when they may be talking to a <strong style="color:var(--text)">minor</strong> (who can’t get a <strong style="color:var(--v)">V</strong>) or an account that never proved it’s human —
+          so communities can spot and flag likely bots more easily.
+        </p>
+      </article>
+    </section>
+
+    <section class="grid" id="selling">
+      <article class="card span-3 point">
+        <h3>Safe</h3>
+        <p>Consent-first. Under-18 blocked. We verify your face on a <strong style="color:var(--text)">live video</strong> by matching it to a valid government photo ID — then we delete the video and ID images. We do <strong style="color:var(--text)">not</strong> keep your ID file or other personal information from that ID. What we keep is a <strong style="color:var(--text)">unique geometric measurement of your face</strong>, sealed as a cryptographically signed proof (the QR / ticket id). That proof is not a photo of your face and not a copy of your license.</p>
+      </article>
+      <article class="card span-3 point">
+        <h3>Secure</h3>
+        <p>Approved IDs, liveness, face↔portrait match, fail closed. Doubt means no neon <span style="color:var(--v);font-weight:800">V</span>.</p>
+      </article>
+      <article class="card span-3 point">
+        <h3>Unique</h3>
+        <p>QR binds a cancelable face-geometry template — like a fingerprint of the face — not a reusable photo file.</p>
+      </article>
+      <article class="card span-3 point">
+        <h3>Trust boost</h3>
+        <p>Especially useful for brand-new or low-volume X accounts that need a clear real-human signal.</p>
+      </article>
+    </section>
+
+    <section class="grid" id="legal">
+      <article class="card span-12 legal">
+        <h2>Where DL back-barcode scans are restricted</h2>
+        <p>
+          Some U.S. jurisdictions limit commercial scanning of the barcode / magnetic strip on a
+          driver’s license. <strong style="color:var(--text)">Those users are not locked out.</strong>
+          They are simply <strong style="color:var(--text)">exempt from scanning the back of the license</strong>.
+          <strong style="color:var(--text)">No second ID.</strong>
+          They keep using their <strong style="color:var(--text)">one</strong> approved photo ID (front of the DL or state ID is enough in those places),
+          with live face match. Images are deleted when verification finishes.
+        </p>
+        <p>
+          The exempt-state list is maintained with counsel (laws change). Product rule:
+          the system reads the ID and <strong style="color:var(--text)">prompts for the back only when the state allows it</strong>; otherwise skip the back scan — never force an illegal scan, and never require a passport or any second ID to compensate.
+        </p>
+      </article>
+    </section>
+
+
+    <section class="grid" id="counsel">
+      <article class="card span-12 legal">
+        <h2>GENERAL CONSIDERATIONS</h2>
+        <p><strong style="color:var(--text)">Not legal advice.</strong> This is a public checklist of who to talk to before real ID or face scanning goes live. Galaxy entry can stay <strong style="color:var(--text)">design-only</strong> until that path is clear.</p>
+        <ol style="margin:0.75rem 0 0; padding-left:1.25rem; color:var(--muted);">
+          <li style="margin-bottom:0.85rem;"><strong style="color:var(--text)">Privacy / biometrics lawyer (best first call)</strong> — someone who knows face-scan and ID rules (often called biometric privacy / “BIPA”-style laws).<br/><em>Hurdle:</em> rules differ by state; consent, notice, and delete rules are strict; mistakes can be expensive.</li>
+          <li style="margin-bottom:0.85rem;"><strong style="color:var(--text)">Consumer / identity lawyer</strong> — firms that advise companies doing ID checks (banks, marketplaces).<br/><em>Hurdle:</em> they may push heavy “know your customer” rules that are bigger than a free X trust badge — more scope and cost.</li>
+          <li style="margin-bottom:0.85rem;"><strong style="color:var(--text)">Driver’s license / DMV data rules</strong> — counsel who knows when barcode / strip scans are restricted.<br/><em>Hurdle:</em> the exempt-state list must be maintained by counsel; we don’t guess.</li>
+          <li style="margin-bottom:0.85rem;"><strong style="color:var(--text)">Vendor legal pack</strong> — Persona, Onfido, or similar: ask for compliance docs and which places they support.<br/><em>Hurdle:</em> their paperwork helps, but it does not replace your own counsel for how you use the tool.</li>
+          <li style="margin-bottom:0.85rem;"><strong style="color:var(--text)">Contest vs live cameras</strong> — for Galaxy, confirm design-only is enough for the entry; live capture is a later step.<br/><em>Hurdle:</em> entering the contest and turning on real scanning are different legal moments.</li>
+          <li style="margin-bottom:0.85rem;"><strong style="color:var(--text)">Short specialist consult</strong> — state bar referral, tech-law clinic, or a 1–2 hour paid consult with someone who has done face/ID work.<br/><em>Hurdle:</em> cheap general advice may miss biometric rules — ask for that experience up front.</li>
+        </ol>
+        <p style="margin-top:1rem;"><strong style="color:var(--text)">One-pager to bring:</strong> free product; delete ID/face photos when verification finishes; signed QR ticket (no face map in the code); US DL, state ID, or passport only; gift to X; design-only until cleared.</p>
+        <p><strong style="color:var(--text)">Suggested order:</strong> short specialist consult → decide design-only vs vendor → deeper counsel before any live scans.</p>
+      </article>
+    </section>
+
+    <section class="grid" id="free-for-x">
+      <article class="card span-12 callout">
+        <h2>Free to people. Free to X. No strings attached.</h2>
+        <p>This idea is offered to X at no cost. Adopt it, redesign it, harden it, and scale it. No paid tier. No upgrade funnel. No ownership claim — just a serious attempt to help real people earn trust in the bot era.</p>
+      </article>
+    </section>
+
+    <section class="grid" id="judges">
+      <article class="card span-12 callout">
+        <h2>Who · What · When · Where · Why · How</h2>
+        <p>
+          A free-forever Grok Bot plugin that turns “are you a real person?” into a trustworthy workflow —
+          privacy-preserving, legally aware, and useful the moment someone opens a new account.
+        </p>
+      </article>
+
+      <article class="card span-4">
+        <h3>Who</h3>
+        <ul>
+          <li>Everyone</li>
+          <li>Creators — all your bots automatically get the <strong style="color:var(--v)">V</strong></li>
+          <li>Communities fighting bots and fakes</li>
+          <li>Galaxy evaluators who care about useful, secure Bot design</li>
+        </ul>
+      </article>
+      <article class="card span-4">
+        <h3>What</h3>
+        <ul>
+          <li>Free Vision Verified — no upgrade, no upsell — no paid tier</li>
+          <li>Gov photo ID + face match</li>
+          <li>QR from face geometry (unique proof)</li>
+          <li>Neon green <strong style="color:var(--v)">V</strong> as the human mark</li>
+        </ul>
+      </article>
+      <article class="card span-4">
+        <h3>When &amp; where</h3>
+        <ul>
+          <li>Galaxy submissions through 9/29/26</li>
+          <li>X-first portable proof</li>
+          <li>Exempt from DL back-scan where the law restricts it — no second ID</li>
+          <li>Free forever — no upsell, paid tier, or ownership claim</li>
+        </ul>
+      </article>
+
+      <article class="card span-6">
+        <h3>Why people should use it</h3>
+        <ul>
+          <li><strong style="color:var(--text)">Safe</strong> — verify without exposing your ID online</li>
+          <li><strong style="color:var(--text)">Secure</strong> — high bar, fail closed</li>
+          <li><strong style="color:var(--text)">Unique</strong> — face-geometry binding, not a shared password</li>
+          <li><strong style="color:var(--text)">Inclusive</strong> — skip DL back-scan when the law blocks it; still one ID only</li>
+        </ul>
+      </article>
+      <article class="card span-6">
+        <h3>Why evaluators should care</h3>
+        <ul>
+          <li>Attacks bots with a real product story</li>
+          <li>Shows Grok Bot coordinating a serious trust workflow</li>
+          <li>Encodes privacy + legal routing into the design</li>
+          <li>Freely gifted to X to use, change, improve, and scale</li>
+          <li>If you are a creator, all your bots automatically get the <strong style="color:var(--v)">V</strong></li>
+        </ul>
+      </article>
+    </section>
+
+
+    <section class="grid" id="anti-bot">
+      <article class="card span-12">
+        <h2>How we make it hard for bots and AI to fool verification</h2>
+        <p>This is the product stack Vision Verified must deliver (design-only until counsel/vendor clearance for live capture):</p>
+        <ol style="margin:0.75rem 0 0; padding-left:1.25rem; color:var(--muted);">
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">Live camera</strong> — live session only, not an uploaded photo or old video file. In the live verify view: show your <strong style="color:var(--text)">face</strong> first, then hold your <strong style="color:var(--text)">license in front of your face</strong> so both are in frame.</li>
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">Real ID</strong> — one approved gov photo ID (US DL, state ID, or passport). The system reads the license/ID and <strong style="color:var(--text)">prompts to show the back</strong> only if their state allows barcode/back scans; otherwise it skips the back scan (never a second ID).</li>
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">Face matches the ID photo</strong></li>
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">PAD (anti-spoof)</strong> — catches masks, printouts, screens, and many deepfake presentation tricks. The heavy hitter vs AI fakes.</li>
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">Random gestures</strong> — scrunch nose, touch nose, and similar, with “choose a different exercise.” Helps stop lazy bots; not enough alone.</li>
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">Injection defense</strong> — block fake video piped in instead of a real webcam.</li>
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">Vaulted unique face code + signed ticket</strong> — QR is a signed ticket id only; zero duplicate matches after mint; same face elsewhere gets flagged.</li>
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">Fail closed</strong> — any doubt = no pass. No soft VISION pass.</li>
+          <li style="margin-bottom:0.55rem;"><strong style="color:var(--text)">Delete photos when done</strong> — no ID file and no personal info from the ID kept. We keep the unique geometric face proof (signed QR / ticket), not a photo or license copy.</li>
+        </ol>
+        <p style="margin-top:1rem;"><strong style="color:var(--text)">Negatives (what we will not do):</strong> CAPTCHA / slider / puzzle as security; gestures alone as the whole bar; second-ID requirements; soft passes; putting the face map inside the QR; storing a recoverable face photo as the “secret”; keeping DL details after verify.</p>
+      </article>
+    </section>
+
+    <section class="grid" id="how">
+      <article class="card span-12">
+        <h2>How it works</h2>
+        <div class="step"><div class="n">1</div><div><span class="step-title">Approved photo ID</span><span>One approved photo ID only (US DL, state ID, or passport). System reads the ID and prompts to show the back only if their state allows it; otherwise skip back scan — no second ID.</span></div></div>
+        <div class="step"><div class="n">2</div><div><span class="step-title">Live verify view</span><span>Face first on camera, then hold the license in front of your face. Live session only — then face must match the ID portrait.</span></div></div>
+        <div class="step"><div class="n">3</div><div><span class="step-title">Face geometry → unique proof</span><span>Build a cancelable template from minute facial geometry — unique enough for ~half a billion people without duplicates — cryptographically sign the binding, then mint a signed QR/attestation id (ticket only; not the face map). Same-face reuse elsewhere is flagged.</span></div></div>
+        <div class="step"><div class="n">4</div><div><span class="step-title">Wipe</span><span>Delete ID images, face frames, and raw barcode payloads. Keep only the unique geometric face proof (signed QR / ticket) — not your ID file, not a face photo, and not other personal info from the ID.</span></div></div>
+        <div class="step"><div class="n">5</div><div><span class="step-title">Show the <span class="v">V</span></span><span>That neon green V is the mark of a verified real person — especially powerful for new and low-volume accounts.</span></div></div>
+      </article>
+    </section>
+
+    <footer>
+      <p><strong style="color:var(--text)">Vision Verified</strong> — Safe. Secure. Unique to the individual. Built to win Grok Bot Galaxy.</p><p><strong style="color:var(--text)">Free forever:</strong> free to every user and offered freely to X. X may adopt it, change it, and improve it however it sees fit. The creator claims no ownership of the idea.</p>
+      <p>Contest promo. Free concept and materials; no fee or royalty requested. A formal public-domain/open-source dedication should be published with the final code. Not legal advice. Not an official X badge. Exempt back-scan routing for barcode-restricted jurisdictions is maintained with counsel (no second ID). Legal review required before processing real government IDs in production. See General considerations above.</p>
+    </footer>
+  </div>
+</body>
+</html>
